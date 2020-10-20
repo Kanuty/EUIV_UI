@@ -1,0 +1,60 @@
+.countryPanel {
+  background-color: #333;
+  display: flex;
+  flex-direction: column;
+  width: 600px;
+  height: 800px;
+  color: #ddd;
+  
+  .titularSection {
+    width: 100%;
+    height: 5%;
+    background-color: #444;
+  }
+  .terrainSection {
+    width: 100%;
+    height: 15%;
+    background-color: #555;
+  }
+  .developmentSection {
+    width: 100%;
+    height: 5%;
+    background-color: #444;
+  }
+  .focusSection {
+    width: 100%;
+    height: 40%;
+    background-color: #666;
+    display: flex;
+    .stabilitySection{
+      width: 30%;
+      height: 100%;
+      background-color: #992222;
+    }
+    .demographicsSection {
+      width: 35%;
+      height: 100%;
+      background-color: #229922;
+    }
+    .militaryProductionSection {
+      width: 35%;
+      height: 100%;
+      background-color: #222299;
+    }
+  }
+  .adminSection{
+    width: 100%;
+    height: 10%;
+    background-color: #444;
+  }
+  .militarySection{
+    width: 100%;
+    height: 15%;
+    background-color: #222;
+  }
+  .tradeSection{
+    width: 100%;
+    height: 15%;
+    background-color: #444;
+  }
+}
