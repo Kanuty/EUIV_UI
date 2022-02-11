@@ -66,12 +66,43 @@ class Army {
   }
 }
 
+const changeArrObjFromTo = (
+  arr,
+  sProperty,
+  min,
+  max,
+  arrFeeder,
+  sPropertyArrFeeder
+) => {
+  console.log(  arr,
+    sProperty,
+    min,
+    max,
+    arrFeeder,
+    sPropertyArrFeeder)
+  const copyOfArrFeeder = arrFeeder[sPropertyArrFeeder].map((e) => e);
+  for (let i = min; i < max; i++) {
+    arr[i][sProperty] = copyOfArrFeeder[copyOfArrFeeder.length - 1];
+    copyOfArrFeeder.pop();
+  }
+  return arr;
+};
+
+const changeArrObjFromToFlat = (arr, sProperty, min, max, arrFeeder) => {
+  const copyOfArrFeeder = arrFeeder.map((e) => e);
+  for (let i = min; i < max; i++) {
+    arr[i][sProperty] = copyOfArrFeeder[copyOfArrFeeder.length - 1];
+    copyOfArrFeeder.pop();
+  }
+  return arr;
+};
+
 class BattleField {
   usableBattleWidth = 15;
   lineMele;
   lineRange;
   reservs = [];
-  #middleOfBattleLine = Math.ceil(globalConstants.battleLineLength / 2 );
+  #middleOfBattleLine = Math.ceil(globalConstants.battleLineLength / 2);
   #middleMinusHalfOfBattleWidth;
   #middlePlusHalfOfBattleWidth;
   constructor(battleWidth = 15) {
@@ -106,16 +137,51 @@ class BattleField {
   fillBattleFieldWithUnits(army) {
     //for now ths is scenario for infantry only
     const infantryUnitsLength = army.infantryUnits.length;
+    console.log(infantryUnitsLength, this.usableBattleWidth);
     if (infantryUnitsLength <= this.usableBattleWidth) {
-      let infantryIndex = 0;
-      for (
-        let i = Math.floor(this.#middleOfBattleLine - infantryUnitsLength / 2);
-        i < Math.floor(this.#middleOfBattleLine + infantryUnitsLength / 2);
-        i++
-      ) {
-        this.lineMele[i].entity = army.infantryUnits[infantryIndex];
-        infantryIndex++;
-      }
+      this.lineMele = changeArrObjFromTo(
+        this.lineMele,
+        "entity",
+        this.#middleOfBattleLine - infantryUnitsLength / 2,
+        this.#middleOfBattleLine + infantryUnitsLength / 2,
+        army,
+        "infantryUnits"
+      );
+    } else if (infantryUnitsLength * 2 > this.usableBattleWidth) {
+      console.log(this.lineMele);
+      this.lineMele = changeArrObjFromTo(
+        this.lineMele,
+        "entity",
+        this.#middleOfBattleLine - Math.floor(this.usableBattleWidth / 2),
+        this.#middleOfBattleLine + Math.floor(this.usableBattleWidth / 2),
+        army,
+        "infantryUnits"
+      );
+      const infantryWithoutFirstRow =
+        army.infantryUnits.slice(this.usableBattleWidth);
+      this.lineRange = changeArrObjFromToFlat(
+        this.lineRange,
+        "entity",
+        this.#middleOfBattleLine - Math.floor(this.usableBattleWidth / 2),
+        this.#middleOfBattleLine + Math.floor(this.usableBattleWidth / 2),
+        infantryWithoutFirstRow
+      );
+      const infantryWithoutBothRows = army.infantryUnits.slice(
+        this.usableBattleWidth * 2
+      );
+      infantryWithoutBothRows.forEach((e) => this.reservs.push(e));
+      this.reservs.push();
+      // for (
+      //   let i = this.#middleMinusHalfOfBattleWidth;
+      //   i < this.#middlePlusHalfOfBattleWidth;
+      //   i++
+      // ) {
+      //   this.lineRange[i].entity = army.infantryUnits[infantryIndex];
+      //   infantryIndex++;
+      // }
+      // for (let i = infantryIndex++; i < infantryUnitsLength; i++) {
+      //   this.reservs.push(army.infantryUnits[i]);
+      // }
     } else if (infantryUnitsLength > this.usableBattleWidth) {
       let infantryIndex = 0;
       for (
@@ -126,40 +192,35 @@ class BattleField {
         this.lineMele[i].entity = army.infantryUnits[infantryIndex];
         infantryIndex++;
       }
-      if(infantryUnitsLength * 2 <= this.usableBattleWidth ){
-      for (
-        let i = Math.floor(this.#middleOfBattleLine - (infantryUnitsLength - this.usableBattleWidth)/ 2);
-        i < Math.floor(this.#middleOfBattleLine + (infantryUnitsLength - this.usableBattleWidth) / 2);
-        i++
-      ) {
-        this.lineRange[i].entity = army.infantryUnits[infantryIndex];
-        infantryIndex++;
-      }
-    } else if(infantryUnitsLength * 2 > this.usableBattleWidth ){
-      for (
-        let i = this.#middleMinusHalfOfBattleWidth;
-        i < this.#middlePlusHalfOfBattleWidth;
-        i++
-      ) {
-        this.lineRange[i].entity = army.infantryUnits[infantryIndex];
-        infantryIndex++;
-      }
-    }
-        for (let i = infantryIndex++; i < infantryUnitsLength; i++) {
-          this.reservs.push(army.infantryUnits[i]);
+      if (infantryUnitsLength * 2 <= this.usableBattleWidth) {
+        for (
+          let i = Math.floor(
+            this.#middleOfBattleLine -
+              (infantryUnitsLength / 2 - this.usableBattleWidth)
+          );
+          i <
+          Math.floor(
+            this.#middleOfBattleLine +
+              (infantryUnitsLength / 2 - this.usableBattleWidth)
+          );
+          i++
+        ) {
+          this.lineRange[i].entity = army.infantryUnits[infantryIndex];
+          infantryIndex++;
         }
+      }
     }
   }
 }
-var a3 = new Army(10, 0, 0);
-var b3 = new BattleField();
-b3.fillBattleFieldWithUnits(a3);
-console.log(b3);
+// var a3 = new Army(10, 0, 0);
+// var b3 = new BattleField();
+// b3.fillBattleFieldWithUnits(a3);
+// console.log(b3);
 
- var a1 = new Army(25, 0, 0);
- var b1 = new BattleField();
- b1.fillBattleFieldWithUnits(a1);
- console.log(b1);
+//  var a1 = new Army(25, 0, 0);
+//  var b1 = new BattleField();
+//  b1.fillBattleFieldWithUnits(a1);
+//  console.log(b1);
 
 var a2 = new Army(50, 0, 0);
 var b2 = new BattleField();
